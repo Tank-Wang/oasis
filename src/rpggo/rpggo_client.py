@@ -3,12 +3,15 @@ import uuid
 import json
 import os
 from dotenv import load_dotenv
+from ..utils.log import get_logger
 
 # 加载环境变量
 load_dotenv()
 
 API_BASE_URL = "https://api.rpggo.ai"
 AUTH_TOKEN = f"Bearer {os.getenv('RPGGO_API_TOKEN')}"
+
+logger = get_logger('RPGGOClient')
 
 class RPGGOClient:
     """RPGGO API 客户端"""
@@ -43,9 +46,9 @@ class RPGGOClient:
         response = self.session.post(url, json=data)
         response.raise_for_status()
         # print(json.dumps(response.json(), indent=4, ensure_ascii=False))
-        return response.json()
+        return response.json()['data']
         
-    def chat_with_npc(self, game_id, character_id, message):
+    def send_action(self, game_id, character_id, message)->list:
         """
         发送玩家行动并获取响应
         
@@ -66,15 +69,17 @@ class RPGGOClient:
             "message_id": str(uuid.uuid4())[:10],
             "message": message
         }
-        
+
         try:
             response = self.session.post(url, json=data)
             response.raise_for_status()
             
             # 解析响应数据
             raw_messages = response.text
-            messages = raw_messages.split('\n')
+            logger.debug(f"Received raw response: {raw_messages}")
             
+            messages = raw_messages.split('\n')
+            return_msg = []
             for message in messages:
                 if message.startswith('data:'):
                     # 提取JSON字符串
@@ -84,19 +89,21 @@ class RPGGOClient:
                         json_str = message[json_start:json_end]
                         try:
                             json_obj = json.loads(json_str)
+                            return_msg.append(json_obj['data']['result'])
                             # 检查是否为NPC响应
-                            if json_obj.get('data', {}).get('result', {}).get('character_type') == 'common_npc':
-                                return json_obj['data']['result']
+                            # if json_obj.get('data', {}).get('result', {}).get('character_type') == 'common_npc':
+                            #     return json_obj['data']['result']
                         except json.JSONDecodeError:
+                            logger.error(f"Error in decode message: {message}")
                             continue
                             
-            return {"text": "No NPC response"}
+            return return_msg
             
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(f"Error in send_action: {e}")
             return None
 
 if __name__ == "__main__":
     client = RPGGOClient()
     client.start_game("CB4JIETSR")
-    print(client.chat_with_npc("CB4JIETSR", "CB4JIETSR", "hi"))
+    print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
