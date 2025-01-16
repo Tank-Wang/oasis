@@ -45,7 +45,7 @@ class RPGGOClient:
         
         response = self.session.post(url, json=data)
         response.raise_for_status()
-        # print(json.dumps(response.json(), indent=4, ensure_ascii=False))
+        logger.debug(json.dumps(response.json(), indent=4, ensure_ascii=False))
         return response.json()['data']
         
     def send_action(self, game_id, character_id, message)->list:
@@ -60,6 +60,10 @@ class RPGGOClient:
         Returns:
             dict: 解析后的NPC响应
         """
+        if not game_id or not character_id or not message:
+            logger.error("game_id, character_id, or message is empty")
+            return None
+
         url = f"{self.api_base_url}/v2/open/game/chatsse"
 
         data = {
@@ -89,7 +93,7 @@ class RPGGOClient:
                         json_str = message[json_start:json_end]
                         try:
                             json_obj = json.loads(json_str)
-                            return_msg.append(json_obj['data']['result'])
+                            return_msg.append(json_obj['data'])
                             # 检查是否为NPC响应
                             # if json_obj.get('data', {}).get('result', {}).get('character_type') == 'common_npc':
                             #     return json_obj['data']['result']
