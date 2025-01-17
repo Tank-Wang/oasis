@@ -121,6 +121,10 @@ class LLMPlayer(BasePlayer):
     def update_state(self, game_state):
         """更新游戏状态"""
         pass
+
+    def _switch_to_next_chapter(self, next_chapter_id):
+        """切换到下一个章节"""
+        pass
     
     def _construct_prompt_for_next_action(self):
         participants = [character['character_name'] for character in self.game_meta['chapter']['characters']]
@@ -206,9 +210,10 @@ class LLMPlayer(BasePlayer):
                     }
                 )
             elif msg['result'].get('character_type') == 'async_npc':
-                replies.append(
-                    {
-                        'character_id': msg['result'].get('character_id'),
+                if msg['result'].get('text').strip():
+                    replies.append(
+                        {
+                            'character_id': msg['result'].get('character_id'),
                         'name': self._get_character_name(msg['result'].get('character_id')),
                         'content': msg['result'].get('text')
                     }
@@ -239,6 +244,8 @@ class LLMPlayer(BasePlayer):
                 if status_action in [3, 4]:
                     self.game_state['end_game'] = True
                 elif status_action == 2:
+                    next_chapter_id = msg['game_status']['chapter_id']
+                    self._switch_to_next_chapter(next_chapter_id)
                     # TODO: switch to next chapter
                     pass
         return self.game_state

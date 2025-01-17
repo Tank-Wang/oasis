@@ -71,7 +71,12 @@ class RPGGOClient:
             "session_id": self.session_id,
             "character_id": character_id,
             "message_id": str(uuid.uuid4())[:10],
-            "message": message
+            "message": message,
+            "advance_config": {
+                "enable_async_npc_streaming": True,
+                "enable_image_streaming": False,
+                "enable_voice_streaming": False
+            }
         }
 
         try:
