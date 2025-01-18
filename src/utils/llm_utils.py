@@ -41,7 +41,7 @@ class GPT(LLMModel):
         # 如果没有提供api_key，则从环境变量获取
         if api_key is None:
             api_key = os.getenv('OPENAI_API_KEY')
-            
+
         super().__init__(model_name, api_key)
         if api_key:
             self.client = OpenAI(api_key=api_key)

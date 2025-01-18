@@ -1,16 +1,27 @@
-# Virtual Environment
-.venv/
-env/
-.env
-
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+.env
+.venv
+env/
+venv/
+ENV/
+dist/
+build/
+*.egg-info/
+
+# data
+data/
 
 # IDE
-.vscode/
 .idea/
+.vscode/
+*.swp
+*.swo
 
-# Misc
-.DS_Store 
+# OS
+.DS_Store
+Thumbs.db 

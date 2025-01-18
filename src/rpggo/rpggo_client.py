@@ -25,7 +25,33 @@ class RPGGOClient:
             'Authorization': AUTH_TOKEN
         })
         self.session_id = str(uuid.uuid4())
+
+    def get_game_metadata(self, game_id):
+        """
+        获取游戏元数据
         
+        Args:
+            game_id: 游戏ID
+            
+        Returns:
+            dict: 游戏元数据
+        """
+        # url = f"{self.api_base_url}/v2/open/game/gamemetadata"
+        url = "https://backend-pro-qavdnvfe5a-uc.a.run.app/open/creator/game/gameData"
+        
+        data = {
+            "game_id": game_id
+        }
+        
+        try:
+            response = self.session.post(url, json=data)
+            response.raise_for_status()
+            logger.debug(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            return response.json()['data'][0]
+        except Exception as e:
+            logger.error(f"Error in get_game_metadata: {e}")
+            return None
+
     def start_game(self, game_id):
         """
         初始化游戏会话
@@ -72,6 +98,10 @@ class RPGGOClient:
             "character_id": character_id,
             "message_id": str(uuid.uuid4())[:10],
             "message": message,
+            "llm_config": {
+                "chat_model": "gpt-4o",
+                "temperature": 0.8
+            },
             "advance_config": {
                 "enable_async_npc_streaming": True,
                 "enable_image_streaming": False,
@@ -114,5 +144,7 @@ class RPGGOClient:
 
 if __name__ == "__main__":
     client = RPGGOClient()
+    # client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
+    # client.get_game_metadata("CZGKDM8L2")
     client.start_game("CB4JIETSR")
     print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))

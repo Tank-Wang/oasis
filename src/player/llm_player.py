@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+This file is the implementation of an AI-based game player.
+
+TODO:
+- switch to next chapter
+- ...
+"""
+
+
 import json
 import random
 from .base_player import BasePlayer
@@ -42,7 +52,6 @@ class LLMPlayer(BasePlayer):
         self.game_state = self._init_game_state()
         
         # 游戏主循环
-        retry_count = 0
         while not self._is_game_over(self.game_state):
             # 获取下一步行动
             action = run_function_with_retry(
@@ -80,11 +89,11 @@ class LLMPlayer(BasePlayer):
             self.game_state = self._update_game_state(response)
             
         self._print_conversation_history()
-        return self.conversation_history
+        return self._export_gameplay_session()
 
     def next_action(self, game_state):
         """使用LLM分析游戏状态并决定下一步行动"""
-        gpt = GPT(model_name="gpt-4o-mini")
+        gpt = GPT(model_name="gpt-4o")
         prompt = self._construct_prompt_for_next_action()
         logger.debug(f"prompt for next action: {prompt}")
 
@@ -129,7 +138,7 @@ class LLMPlayer(BasePlayer):
     def _construct_prompt_for_next_action(self):
         participants = [character['character_name'] for character in self.game_meta['chapter']['characters']]
         player_name = "player"
-        chat_history = self._format_conversation_history()
+        chat_history = self._format_conversation_history_for_action_generation()
         prompt_tpl = get_system_prompt_tpl_for_ai_player(is_nsfw=False)
         prompt_tpl = prompt_tpl.replace("{$PARTICIPANTS_LIST}", json.dumps(participants, ensure_ascii=False))
         prompt_tpl = prompt_tpl.replace("{$PLAYER_NAME}", player_name)
@@ -272,7 +281,7 @@ class LLMPlayer(BasePlayer):
         for msg in self.conversation_history:
             print(f"{msg['name']}: {msg['content']}\n\n")
     
-    def _format_conversation_history(self):
+    def _format_conversation_history_for_action_generation(self):
         """格式化对话历史以包含在提示词中"""
         formatted_history = []
         for msg in self.conversation_history[:self.MAX_HISTORY_LENGTH_FOR_PROMPT]:
@@ -286,4 +295,10 @@ class LLMPlayer(BasePlayer):
                     'role': msg['name'],
                     'content': msg['content']
                 })
-        return formatted_history 
+        return formatted_history
+    
+    def _export_gameplay_session(self):
+        gameplay_session = []
+        for msg in self.conversation_history:
+            gameplay_session.append(msg.pop('character_id'))
+        return gameplay_session

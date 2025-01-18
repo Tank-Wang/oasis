@@ -28,7 +28,7 @@ class CustomFormatter(logging.Formatter):
 
 # 创建全局logger
 logger = logging.getLogger('rpggo')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # 创建控制台处理器
 console_handler = logging.StreamHandler(sys.stdout)
