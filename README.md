@@ -23,10 +23,10 @@ A Python client library for interacting with RPGGO API, featuring LLM-powered pl
 
 ```bash
 # Clone the repository
-git clone https://github.com/RPGGO-AI/Oasis.git
+git clone https://github.com/RPGGO-AI/oasis.git
 
 # Navigate to the project directory
-cd Oasis
+cd oasis
 
 # Install dependencies
 pip install -r requirements.txt
@@ -41,6 +41,8 @@ Create a .env file and add your API tokens:
 RPGGO_API_TOKEN=your_rpggo_token
 OPENAI_API_KEY=your_openai_token
 ```
+
+apply your RPGGO_API_TOKEN: https://developer.rpggo.ai/dev-docs/support/apply-your-test-key
 
 ### 2. Basic RPGGO Client Usage
 
