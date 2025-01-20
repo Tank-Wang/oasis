@@ -13,45 +13,49 @@ from typing import List, Dict
 from ..utils.llm_utils import GPT
 from ..utils.log import get_logger
 from .evaluator_prompt import EVALUATOR_PROMPT
-
+from ..rpggo.rpggo_client import RPGGOClient
 logger = get_logger('LLMEvaluator')
 
 class LLMEvaluator():
-    """基于LLM的游戏评估器实现，专注于评估NPC表现和游戏可玩性"""
+    """LLM-based game evaluator implementation, focusing on evaluating NPC performance and game playability"""
     
     def __init__(self):
         pass
     
-    def evaluate_game(self, game_metadata: Dict, game_histories: List[Dict]) -> Dict:
+    def evaluate_game_sessions(self, game_id: str, game_sessions: List[Dict]) -> Dict:
         """
-        基于多次游戏对话历史评估游戏表现
+        Evaluate game sessions based on multiple game dialogues
 
         Args:
-            game_metadata: 游戏元数据
-            game_histories: 包含多次游戏对话历史的列表，每个元素是一次完整的对话历史
+            game_id: Game ID
+            game_sessions: List of game dialogues, each element is a complete dialogue history
             
         Returns:
-            evaluation: 包含评估结果的字典
+            evaluation: Dictionary containing evaluation results
         """
-        if not game_metadata:
-            raise ValueError("game_metadata is empty")
+        if not game_id:
+            raise ValueError("game_id is empty")
 
-        if not game_histories:
-            raise ValueError("conversation_history is empty")
+        if not game_sessions:
+            raise ValueError("game_sessions is empty")
         
-        if len(game_histories) < 3:
-            logger.warning("conversation_history is less than 3, recommend to include more conversation_history")
+        if len(game_sessions) < 3:
+            logger.warning("game_sessions is less than 3, recommend to include more game_sessions")
+
+        # get game metadata
+        rpggo_client = RPGGOClient()
+        game_metadata = rpggo_client.get_game_metadata(game_id)
  
-        # 构建评估提示词
-        prompt = self._construct_game_evaluation_prompt(game_metadata, game_histories)
+        # construct evaluation prompt
+        prompt = self._construct_game_evaluation_prompt(game_metadata, game_sessions)
         logger.info(f"evaluator prompt: {prompt}")
         
-        # 获取LLM的评估结果
+        # get evaluation result from LLM
         gpt = GPT(model_name="gpt-4o")
         try:
             response = gpt.generate(prompt=prompt, json_mode=True)
             evaluation = json.loads(response)
-            logger.info(f"evaluation: {json.dumps(evaluation, ensure_ascii=False, indent=4)}")
+            logger.debug(f"evaluation: {json.dumps(evaluation, ensure_ascii=False, indent=4)}")
         except json.JSONDecodeError as e:
             logger.error(f"JSONDecodeError: {str(e)}")
             return {}
@@ -62,10 +66,10 @@ class LLMEvaluator():
         return evaluation
     
     def _construct_game_evaluation_prompt(self, game_metadata: Dict, gameplay_sessions: List[Dict]) -> str:
-        """构建评估提示词"""
+        """Construct evaluation prompt"""
         prompt_tpl = EVALUATOR_PROMPT
         game_metadata_for_evaluation = self._get_game_metadata_for_evaluation(game_metadata)
-        logger.info(f"game_metadata_for_evaluation: {json.dumps(game_metadata_for_evaluation, ensure_ascii=False, indent=2)}")
+        logger.debug(f"game_metadata_for_evaluation: {json.dumps(game_metadata_for_evaluation, ensure_ascii=False, indent=2)}")
         prompt = prompt_tpl.replace('{$GAME_METADATA}', json.dumps(game_metadata_for_evaluation, ensure_ascii=False))
         prompt = prompt.replace('{$CHAT_HISTORY}', json.dumps(gameplay_sessions, ensure_ascii=False))
         return prompt

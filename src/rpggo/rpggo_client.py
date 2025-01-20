@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from ..utils.log import get_logger
 
-# 加载环境变量
+# Load environment variables
 load_dotenv()
 
 API_BASE_URL = "https://api.rpggo.ai"
@@ -14,7 +14,7 @@ AUTH_TOKEN = f"Bearer {os.getenv('RPGGO_API_TOKEN')}"
 logger = get_logger('RPGGOClient')
 
 class RPGGOClient:
-    """RPGGO API 客户端"""
+    """RPGGO API Client"""
     
     def __init__(self):
         self.api_base_url = API_BASE_URL
@@ -28,13 +28,13 @@ class RPGGOClient:
 
     def get_game_metadata(self, game_id):
         """
-        获取游戏元数据
+        Get game metadata
         
         Args:
-            game_id: 游戏ID
+            game_id: Game ID
             
         Returns:
-            dict: 游戏元数据
+            dict: Game metadata
         """
         # url = f"{self.api_base_url}/v2/open/game/gamemetadata"
         url = "https://backend-pro-qavdnvfe5a-uc.a.run.app/open/creator/game/gameData"
@@ -54,13 +54,13 @@ class RPGGOClient:
 
     def start_game(self, game_id):
         """
-        初始化游戏会话
+        Initialize game session
         
         Args:
-            game_id: 游戏ID
+            game_id: Game ID
             
         Returns:
-            dict: 游戏初始化响应
+            dict: Game initialization response
         """
         url = f"{self.api_base_url}/v2/open/game/startgame"
         
@@ -76,15 +76,15 @@ class RPGGOClient:
         
     def send_action(self, game_id, character_id, message)->list:
         """
-        发送玩家行动并获取响应
+        Send player action and get response
         
         Args:
-            game_id: 游戏ID
-            character_id: 角色ID
-            message: 玩家的消息内容
+            game_id: Game ID
+            character_id: Character ID
+            message: Player's message content
             
         Returns:
-            dict: 解析后的NPC响应
+            dict: Parsed NPC response
         """
         if not game_id or not character_id or not message:
             logger.error("game_id, character_id, or message is empty")
@@ -113,7 +113,7 @@ class RPGGOClient:
             response = self.session.post(url, json=data)
             response.raise_for_status()
             
-            # 解析响应数据
+            # Parse response data
             raw_messages = response.text
             logger.debug(f"Received raw response: {raw_messages}")
             
@@ -121,7 +121,7 @@ class RPGGOClient:
             return_msg = []
             for message in messages:
                 if message.startswith('data:'):
-                    # 提取JSON字符串
+                    # Extract JSON string
                     json_start = message.find('{')
                     json_end = message.rfind('}') + 1
                     if json_start != -1 and json_end != -1:
@@ -129,9 +129,6 @@ class RPGGOClient:
                         try:
                             json_obj = json.loads(json_str)
                             return_msg.append(json_obj['data'])
-                            # 检查是否为NPC响应
-                            # if json_obj.get('data', {}).get('result', {}).get('character_type') == 'common_npc':
-                            #     return json_obj['data']['result']
                         except json.JSONDecodeError:
                             logger.error(f"Error in decode message: {message}")
                             continue

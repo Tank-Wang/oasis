@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 class LLMModel:
-    """LLM模型的包装类，提供统一的接口"""
+    """Wrapper class for LLM model, providing a unified interface"""
     
     def __init__(self, model_name: str, api_key: Optional[str] = None):
         self.model_name = model_name
@@ -13,32 +13,32 @@ class LLMModel:
         
     def generate(self, prompt: str) -> str:
         """
-        生成LLM响应
+        Generate LLM response
         
         Args:
-            prompt: 输入提示词
+            prompt: Input prompt
             
         Returns:
-            response: LLM的响应文本
+            response: LLM response text
         """
-        # TODO: 实现具体的LLM调用逻辑
+        # TODO: Implement specific LLM call logic
         pass
 
 class GPT(LLMModel):
-    """OpenAI GPT模型的实现类"""
+    """Implementation class for OpenAI GPT model"""
     
     def __init__(self, model_name: str = "gpt-4o-mini", api_key: Optional[str] = None):
         """
-        初始化GPT模型
+        Initialize GPT model
         
         Args:
-            model_name: 模型名称，默认为"gpt-4o-mini"
-            api_key: OpenAI API密钥，如果为None则从环境变量获取
+            model_name: Model name, default is "gpt-4o-mini"
+            api_key: OpenAI API key, if None, get from environment variable
         """
-        # 加载环境变量
+        # Load environment variables
         load_dotenv()
         
-        # 如果没有提供api_key，则从环境变量获取
+        # If api_key is not provided, get from environment variable
         if api_key is None:
             api_key = os.getenv('OPENAI_API_KEY')
 
@@ -48,23 +48,24 @@ class GPT(LLMModel):
             
     def generate(self, prompt: str, system_prompt: Optional[str] = None, temperature: Optional[float] = 0.8, json_mode: Optional[bool] = False) -> str:
         """
-        使用OpenAI API生成响应
+        Generate response using OpenAI API
         
         Args:
-            prompt: 输入提示词
+            prompt: Input prompt
             
         Returns:
-            str: GPT的响应文本
+            str: GPT response text
         
         Raises:
-            Exception: 当API调用失败时抛出异常
+            Exception: Exception raised when API call fails
         """
+        message = [{"role": "user", "content": prompt}]
+        if system_prompt:
+            message.insert(0, {"role": "system", "content": system_prompt})
         try:
             completion = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
+                messages=message,
                 temperature=temperature,
                 response_format={"type": "json_object"} if json_mode else None
             )

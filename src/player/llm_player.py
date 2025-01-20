@@ -7,22 +7,32 @@ TODO:
 - ...
 """
 
-
+from pydantic import BaseModel
 import json
 import random
+
 from ..rpggo import RPGGOClient
 from ..utils.llm_utils import GPT
 from ..utils.log import get_logger
-from ..player.prompt import get_system_prompt_tpl_for_ai_player
+from .player_prompt import get_system_prompt_tpl_for_ai_player
 from ..utils.common import run_function_with_retry
 
 logger = get_logger('LLMPlayer')
 
+class GamePlayConfig(BaseModel):
+    """
+    define the gameplay config
+    """
+    game_id: str
+    max_turns: int = 10 # max chat turns
+    gameplay_instructions: str = "" # instructions for the player
+
+
 class LLMPlayer():
-    """基于LLM的游戏玩家实现"""
+    """LLM-based game player implementation"""
     DEFAULT_PLAYER_ID = 'default_player_id'
     MAX_HISTORY_LENGTH_FOR_PROMPT = 20
-    MAX_CHAT_TURNS = 10
+    MAX_GAME_SESSION_TURNS = 30
     MAX_RETRY_COUNT = 3
     
     def __init__(self):
@@ -30,28 +40,28 @@ class LLMPlayer():
         self.game_state = self._init_game_state()
         self.conversation_history = []
         
-    def play_game(self, game_id):
+    def play_game(self, gameplay_config: GamePlayConfig):
         """
-        开始一个完整的游戏会话
+        Start a complete game session
         
         Args:
-            game_id: RPGGO游戏的唯一标识符
+            game_id: Unique identifier for the RPGGO game
             
         Returns:
-            conversation_history: 完整的游戏对话历史
+            conversation_history: Complete game dialogue history
         """
-        # 初始化游戏
+        # Initialize game
         rpggo_client = RPGGOClient()
-        response = rpggo_client.start_game(game_id)
+        response = rpggo_client.start_game(gameplay_config.game_id)
         self.game_meta = self._extract_game_meta(response)
         self.conversation_history = self._init_conversation_history(response)
         self.game_state = self._init_game_state()
         
-        # 游戏主循环
-        while not self._is_game_over(self.game_state):
-            # 获取下一步行动
+        # Game main loop
+        while not self._is_game_over(self.game_state, gameplay_config):
+            # Get next action
             action = run_function_with_retry(
-                func=lambda: self.next_action(self.game_state),
+                func=lambda: self.next_action(self.game_state, gameplay_config),
                 max_retries=self.MAX_RETRY_COUNT,
                 error_msg="Failed to generate action"
             )
@@ -60,7 +70,7 @@ class LLMPlayer():
             if action['message'] == 'q':
                 break
 
-            # 将玩家输入添加到对话历史
+            # Add player input to dialogue history
             self.conversation_history.append({
                 'character_id': self.DEFAULT_PLAYER_ID,
                 'name': 'Player',
@@ -68,9 +78,9 @@ class LLMPlayer():
             })
             print(f"Player: {action['message']}\n\n")
             
-            # 执行行动并获取响应
+            # Execute action and get response
             response = run_function_with_retry(
-                func=lambda: rpggo_client.send_action(game_id, action['character_id'], action['message']),
+                func=lambda: rpggo_client.send_action(gameplay_config.game_id, action['character_id'], action['message']),
                 max_retries=self.MAX_RETRY_COUNT,
                 error_msg="Failed to send action"
             )
@@ -78,19 +88,19 @@ class LLMPlayer():
             if not response:
                 break
 
-            # 更新对话历史
+            # Update dialogue history
             self.conversation_history = self._update_conversation_history(response)
             
-            # 更新游戏状态
+            # Update game state
             self.game_state = self._update_game_state(response)
             
         self._print_conversation_history()
         return self._export_gameplay_session()
 
-    def next_action(self, game_state):
-        """使用LLM分析游戏状态并决定下一步行动"""
+    def next_action(self, game_state, gameplay_config: GamePlayConfig):
+        """Use LLM to analyze game state and decide next action"""
         gpt = GPT(model_name="gpt-4o")
-        prompt = self._construct_prompt_for_next_action()
+        prompt = self._construct_prompt_for_next_action(gameplay_config.gameplay_instructions)
         logger.debug(f"prompt for next action: {prompt}")
 
         try:
@@ -124,14 +134,15 @@ class LLMPlayer():
             return None
     
     def update_state(self, game_state):
-        """更新游戏状态"""
+        """Update game state"""
         pass
 
     def _switch_to_next_chapter(self, next_chapter_id):
-        """切换到下一个章节"""
+        """Switch to next chapter"""
         pass
     
-    def _construct_prompt_for_next_action(self):
+    def _construct_prompt_for_next_action(self, gameplay_instructions: str):
+        # TODO: add gameplay instructions to the prompt
         participants = [character['character_name'] for character in self.game_meta['chapter']['characters']]
         player_name = "player"
         chat_history = self._format_conversation_history_for_action_generation()
@@ -140,18 +151,12 @@ class LLMPlayer():
         prompt_tpl = prompt_tpl.replace("{$PLAYER_NAME}", player_name)
         prompt_tpl = prompt_tpl.replace("{$GAME_META_INFO}", json.dumps(self.game_meta, ensure_ascii=False))
         prompt_tpl = prompt_tpl.replace("{$INTERACTION_HISTORY}", json.dumps(chat_history, ensure_ascii=False))
+        prompt_tpl = prompt_tpl.replace("{$GAME_PLAY_INSTRUCTIONS}", gameplay_instructions)
         return prompt_tpl
     
-    def _parse_llm_response(self, response):
-        """将LLM的响应解析为具体的游戏行动"""
-        # 清理和标准化LLM的响应
-        action = response.strip()
-        # 可以添加更多的响应处理逻辑
-        return action
-    
     def _extract_game_meta(self, response):
-        """从RPGGO的响应中提取游戏元数据"""
-        # 游戏信息
+        """Extract game metadata from RPGGO response"""
+        # Game information
         game_meta = {}
         game_meta['game_id'] = response.get('game_id')
         game_meta['game_name'] = response.get('game_name')
@@ -159,7 +164,7 @@ class LLMPlayer():
         game_meta['introduction'] = response.get('intro')
         game_meta['category'] = response.get('category')
         game_meta['user_id'] = response.get('user_id')
-        # 章节信息
+        # Chapter information
         chapter = {}
         chapter['chapter_id'] = response['chapter'].get('chapter_id')
         chapter['name'] = response['chapter'].get('chapter_name')
@@ -167,7 +172,7 @@ class LLMPlayer():
         chapter['introduction'] = response['chapter'].get('intro')
         chapter['goals'] = response['chapter'].get('goals')
         chapter['goal_info'] = response['chapter'].get('goal_info')
-        # 角色信息
+        # Character information
         characters = []
         for character in response['chapter']['characters']:
             character_info = {
@@ -185,7 +190,7 @@ class LLMPlayer():
         return self.game_meta
     
     def _init_conversation_history(self, response):
-        """初始化对话历史"""
+        """Initialize conversation history"""
         # logger.debug(f"init conversation history: {json.dumps(response, indent=4, ensure_ascii=False)}")
         self.conversation_history = []
         for item in response['chapter'].get('init_dialog', []):
@@ -200,7 +205,7 @@ class LLMPlayer():
         return self.conversation_history
     
     def _update_conversation_history(self, response):
-        """更新对话历史"""
+        """Update conversation history"""
         if not response:
             return self.conversation_history
         # print(json.dumps(response, indent=4, ensure_ascii=False))
@@ -229,7 +234,7 @@ class LLMPlayer():
         return self.conversation_history
     
     def _init_game_state(self):
-        """初始化游戏状态"""
+        """Initialize game state"""
         return {
             'chat_turns': 0,
             'end_game': False,
@@ -237,11 +242,11 @@ class LLMPlayer():
         }
     
     def _update_game_state(self, response):
-        """从RPGGO的响应中提取游戏状态"""
+        """Extract game state from RPGGO response"""
         for msg in response:
             if msg['result'].get('character_type') == 'common_npc' and msg['result'].get('text'):
                 self.game_state['chat_turns'] += 1
-                if self.game_state['chat_turns'] >= self.MAX_CHAT_TURNS:
+                if self.game_state['chat_turns'] >= self.MAX_GAME_SESSION_TURNS:
                     self.game_state['end_game'] = True
             elif msg['result'].get('character_type') == 'goal_check_dm':
                 self.game_state['goal_status'] = msg['game_status']['goal']['goals_status']
@@ -255,30 +260,30 @@ class LLMPlayer():
                     pass
         return self.game_state
     
-    def _is_game_over(self, game_state):
-        return game_state['end_game']
+    def _is_game_over(self, game_state, gameplay_config: GamePlayConfig):
+        return game_state['end_game'] or game_state['chat_turns'] >= gameplay_config.max_turns
     
     def _get_character_name(self, character_id):
-        """根据角色ID获取角色名称"""
+        """Get character name by character ID"""
         for character in self.game_meta['chapter']['characters']:
             if character['character_id'] == character_id:
                 return character['character_name']
         return None
     
     def _get_character_id(self, character_name):
-        """根据角色名称获取角色ID"""
+        """Get character ID by character name"""
         for character in self.game_meta['chapter']['characters']:
             if character['character_name'].lower() == character_name.lower():
                 return character['character_id']
         return None
 
     def _print_conversation_history(self):
-        """打印对话历史"""
+        """Print conversation history"""
         for msg in self.conversation_history:
             print(f"{msg['name']}: {msg['content']}\n\n")
     
     def _format_conversation_history_for_action_generation(self):
-        """格式化对话历史以包含在提示词中"""
+        """Format conversation history for prompt"""
         formatted_history = []
         for msg in self.conversation_history[:self.MAX_HISTORY_LENGTH_FOR_PROMPT]:
             if msg['name'] == 'player':
@@ -296,5 +301,7 @@ class LLMPlayer():
     def _export_gameplay_session(self):
         gameplay_session = []
         for msg in self.conversation_history:
-            gameplay_session.append(msg.pop('character_id'))
+            msg_dict = msg.copy()
+            msg_dict.pop('character_id')
+            gameplay_session.append(msg_dict)
         return gameplay_session

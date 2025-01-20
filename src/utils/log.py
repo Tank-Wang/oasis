@@ -2,7 +2,7 @@ import logging
 import sys
 
 class CustomFormatter(logging.Formatter):
-    """自定义日志格式化器"""
+    """Custom log formatter"""
     
     grey = "\x1b[38;21m"
     blue = "\x1b[34;21m"
@@ -26,26 +26,26 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt, datefmt='%Y-%m-%d %H:%M:%S')
         return formatter.format(record)
 
-# 创建全局logger
+# Create global logger
 logger = logging.getLogger('rpggo')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
-# 创建控制台处理器
+# Create console handler
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(CustomFormatter())
 logger.addHandler(console_handler)
 
 def get_logger(name=None):
     """
-    获取logger实例
+    Get logger instance
     
     Args:
-        name: logger名称，如果为None则返回全局logger
+        name: Logger name, returns global logger if None
         
     Returns:
-        logging.Logger: logger实例
+        logging.Logger: Logger instance
     """
     if name is None:
         return logger
     child_logger = logger.getChild(name)
-    return child_logger 
+    return child_logger

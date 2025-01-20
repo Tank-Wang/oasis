@@ -4,15 +4,15 @@ logger = get_logger(__name__)
 
 def run_function_with_retry(func, max_retries=3, error_msg="Operation failed"):
     """
-    使用重试机制运行函数
+    Run function with retry mechanism
     
     Args:
-        func: 要执行的函数（必须是无参数的callable）
-        max_retries: 最大重试次数
-        error_msg: 错误信息前缀
+        func: Function to execute (must be a callable without parameters)
+        max_retries: Maximum number of retries
+        error_msg: Error message prefix
         
     Returns:
-        函数执行结果，如果所有重试都失败则返回None
+        Function execution result, return None if all retries fail
     """
     retry_count = 0
     while retry_count <= max_retries:
