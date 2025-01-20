@@ -1,4 +1,4 @@
-# RPGGO API Client & LLM Integration
+# AI Player and Game Evaluator for RPGGO Games
 
 A Python client library for interacting with RPGGO API, featuring LLM-powered player agents and gameplay evaluation capabilities.
 
