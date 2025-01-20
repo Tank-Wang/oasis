@@ -37,6 +37,8 @@ class RPGGOClient:
             dict: Game metadata
         """
         # url = f"{self.api_base_url}/v2/open/game/gamemetadata"
+        # TODO: change to the new API
+        # use this api to get more detailed game metadata
         url = "https://backend-pro-qavdnvfe5a-uc.a.run.app/open/creator/game/gameData"
         
         data = {
@@ -46,8 +48,12 @@ class RPGGOClient:
         try:
             response = self.session.post(url, json=data)
             response.raise_for_status()
-            logger.debug(json.dumps(response.json(), indent=2, ensure_ascii=False))
-            return response.json()['data'][0]
+            logger.info(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            object = response.json()['data']
+            if isinstance(object, list):
+                return object[0]
+            else:
+                return object
         except Exception as e:
             logger.error(f"Error in get_game_metadata: {e}")
             return None
@@ -142,6 +148,6 @@ class RPGGOClient:
 if __name__ == "__main__":
     client = RPGGOClient()
     # client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
-    # client.get_game_metadata("CZGKDM8L2")
-    client.start_game("CB4JIETSR")
-    print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
+    client.get_game_metadata("CHNSAT63X")
+    # client.start_game("CB4JIETSR")
+    # print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))

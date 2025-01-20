@@ -61,5 +61,5 @@ def auto_play_game():
     print(json.dumps(gameplay_session, ensure_ascii=False, indent=4))
 
 if __name__ == "__main__":
-    # auto_evaluation(game_list["tyrion_lannister"], use_saved_data=True)
-    auto_play_game()
+    auto_evaluation(game_list["tyrion_lannister"], use_saved_data=True)
+    # auto_play_game()
