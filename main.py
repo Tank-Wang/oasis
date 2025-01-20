@@ -56,5 +56,5 @@ def auto_play_game():
     player.play_game(game_list["killer_among_us"])
 
 if __name__ == "__main__":
-    auto_evaluation(game_list["killer_among_us"], use_saved_data=True)
-    # auto_play_game()
+    # auto_evaluation(game_list["killer_among_us"], use_saved_data=True)
+    auto_play_game()

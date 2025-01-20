@@ -10,7 +10,6 @@ TODO:
 
 import json
 import random
-from .base_player import BasePlayer
 from ..rpggo import RPGGOClient
 from ..utils.llm_utils import GPT
 from ..utils.log import get_logger
@@ -19,7 +18,7 @@ from ..utils.common import run_function_with_retry
 
 logger = get_logger('LLMPlayer')
 
-class LLMPlayer(BasePlayer):
+class LLMPlayer():
     """基于LLM的游戏玩家实现"""
     DEFAULT_PLAYER_ID = 'default_player_id'
     MAX_HISTORY_LENGTH_FOR_PROMPT = 20
@@ -27,9 +26,6 @@ class LLMPlayer(BasePlayer):
     MAX_RETRY_COUNT = 3
     
     def __init__(self):
-        super().__init__()
-        # self.llm_model = llm_model
-        # self.rpggo_client = RPGGOClient()
         self.game_meta = None
         self.game_state = self._init_game_state()
         self.conversation_history = []
