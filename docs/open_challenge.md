@@ -1,6 +1,6 @@
 # An AI-based Game Evaluation Framework
 
-## Project Background
+## 1. Project Background
 
 The website rpggo.ai hosts a diverse array of text-based RPG games, all created by gaming enthusiasts. These games can be experienced using our proprietary game engine, the Zagii-Engine. This platform aims to bring a community-driven gaming experience by allowing users to craft and share their adventures.
 
@@ -17,7 +17,7 @@ The benefits of the AI Game Evaluator extend beyond these objectives, including:
 - The potential for the AI Game Evaluator to evolve into a game player's assistant or copilot, helping players to better navigate and explore games.
 - Serving as a rapid testing tool for creators during the Game Creation phase, providing quick evaluation results or further modification suggestions, potentially forming an essential foundation for a Creator Copilot.
 
-## Project Requirements
+## 2. Project Requirements
 
 The AI Game Evaluator should be capable of assessing any game on rpggo and providing optimization suggestions.
 
@@ -38,7 +38,7 @@ The AI Game Evaluator should be capable of assessing any game on rpggo and provi
 - Utilize AI models to automatically evaluate this interaction session, rate the gaming experience, and highlight the game's strengths and areas for improvement.
 
 
-## An Open Source Implementation Plan
+## 3. An Open Source Implementation Plan
 We offer an initial implementation plan, which may serve as an example or a baseline.
 
 ### System Framework Diagram
@@ -48,7 +48,7 @@ Here is a high-level overview of the system framework:
 ### Code Repository
 GitHub: https://github.com/RPGGO-AI/oasis
 
-## About Game Evaluation
+## 4. About Game Evaluation
 
 ### Evaluation Modes
 We aim to support the following two evaluation modes:
