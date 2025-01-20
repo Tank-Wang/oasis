@@ -1,9 +1,8 @@
 # An AI-based Game Evaluator
 
 ## Hiring Notification
-- This project is now open to interns or part-time contributors. If you are interested in this AI application project or have a passion for the AI and gaming field, feel free to contact us.
-- Email: pengxzh@rpggo.ai
-
+- This project is now open to **interns** or **part-time** contributors. If you are interested in this AI application project or have a passion for the AI and gaming field, feel free to contact us.
+- **Email**: pengxzh@rpggo.ai
 
 ## 1. Project Background
 
