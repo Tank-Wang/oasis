@@ -5,6 +5,7 @@
 The website rpggo.ai hosts a diverse array of text-based RPG games, all created by gaming enthusiasts. These games can be experienced using our proprietary game engine, the Zagii-Engine. This platform aims to bring a community-driven gaming experience by allowing users to craft and share their adventures.
 
 Try it out here 👉: https://rpggo.ai
+
 ![image](https://github.com/RPGGO-AI/oasis/blob/main/docs/images/game_lobby.png)
 
 
@@ -20,20 +21,19 @@ The benefits of the AI Game Evaluator extend beyond these objectives, including:
 
 Let’s initially focus on the core requirement: the AI Game Evaluator should be capable of assessing any game on rpggo and providing optimization suggestions.
 
-We provide:
+### We provide the following API interface:
 - An API interface to retrieve essential game information, aiding the evaluator in understanding the game's foundational setup.
   - This interface can access all the information visible to a game player, as illustrated in the image below:
-  - ![image](https://github.com/RPGGO-AI/oasis/blob/main/docs/images/game_meta.PNG)
+    ![image](https://github.com/RPGGO-AI/oasis/blob/main/docs/images/game_meta.PNG)
 - A Game Management API interface
   - Provides functions such as starting a game or switching chapters to control game progression.
 - A Game Dialogue API interface
   - Serves as an API allowing players to converse with any NPC within the game, enabling the Game Evaluator to simulate a player's gameplay experience.
   - This interface also provides notifications for any changes in the game state.
 
-### Data Interface
-Detailed API information: https://github.com/RPGGO-AI/oasis/blob/main/src/rpggo/api.md
+**Detailed API information**: https://github.com/RPGGO-AI/oasis/blob/main/src/rpggo/api.md
 
-Required Implementation:
+### Required Implementation:
 - Develop an AI-based Game Player that interacts with NPCs according to the game settings and rules for several rounds, resulting in a comprehensive game interaction session.
 - Utilize AI models to automatically evaluate this interaction session, rate the gaming experience, and highlight the game's strengths and areas for improvement.
 
