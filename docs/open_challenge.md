@@ -9,7 +9,7 @@ Try it out here 👉: https://rpggo.ai
 ![image](https://github.com/RPGGO-AI/oasis/blob/main/docs/images/game_lobby.png)
 
 
-We are looking to develop an AI-based Game Evaluator with the primary objectives of:
+**We are looking to** develop an AI-based Game Evaluator with the primary objectives of:
 - Creating an automated evaluation tool to ensure quality and consistency when the Zagii-Engine undergoes upgrades.
 - Performing routine evaluations of games on the website to identify exceptional or underwhelming games, thus aiding operational staff in their development follow-ups, and potentially facilitating the creation of an AI-driven recommendation list.
 
@@ -19,7 +19,7 @@ The benefits of the AI Game Evaluator extend beyond these objectives, including:
 
 ## Project Requirements
 
-Let’s initially focus on the core requirement: the AI Game Evaluator should be capable of assessing any game on rpggo and providing optimization suggestions.
+The AI Game Evaluator should be capable of assessing any game on rpggo and providing optimization suggestions.
 
 ### We provide the following API interface:
 - An API interface to retrieve essential game information, aiding the evaluator in understanding the game's foundational setup.
@@ -38,7 +38,7 @@ Let’s initially focus on the core requirement: the AI Game Evaluator should be
 - Utilize AI models to automatically evaluate this interaction session, rate the gaming experience, and highlight the game's strengths and areas for improvement.
 
 
-## Open Source Implementation Plan
+## An Open Source Implementation Plan
 We offer an initial implementation plan, which may serve as an example or a baseline.
 
 ### System Framework Diagram
