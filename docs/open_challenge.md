@@ -17,6 +17,7 @@ The benefits of the AI Game Evaluator extend beyond these objectives, including:
 - The potential for the AI Game Evaluator to evolve into a game player's assistant or copilot, helping players to better navigate and explore games.
 - Serving as a rapid testing tool for creators during the Game Creation phase, providing quick evaluation results or further modification suggestions, potentially forming an essential foundation for a Creator Copilot.
 
+
 ## 2. Project Requirements
 
 The AI Game Evaluator should be capable of assessing any game on rpggo and providing optimization suggestions.
@@ -47,6 +48,7 @@ Here is a high-level overview of the system framework:
 
 ### Code Repository
 GitHub: https://github.com/RPGGO-AI/oasis
+
 
 ## 4. About Game Evaluation
 
