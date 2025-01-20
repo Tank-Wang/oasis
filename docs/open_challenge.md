@@ -31,7 +31,7 @@ The AI Game Evaluator should be capable of assessing any game on rpggo and provi
   - Serves as an API allowing players to converse with any NPC within the game, enabling the Game Evaluator to simulate a player's gameplay experience.
   - This interface also provides notifications for any changes in the game state.
 
-**Detailed API information**: https://github.com/RPGGO-AI/oasis/blob/main/src/rpggo/api.md
+**Detailed API information**: https://developer.rpggo.ai/dev-docs/player-api/api-overview/api-v2-new
 
 ### Required Implementation:
 - Develop an AI-based Game Player that interacts with NPCs according to the game settings and rules for several rounds, resulting in a comprehensive game interaction session.
