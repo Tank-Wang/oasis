@@ -48,7 +48,7 @@ Here is a high-level overview of the system framework:
 ### Code Repository
 GitHub: https://github.com/RPGGO-AI/oasis
 
-## Game Evaluation Explanation
+## About Game Evaluation
 
 ### Evaluation Modes
 We aim to support the following two evaluation modes:
