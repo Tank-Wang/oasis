@@ -30,12 +30,13 @@ We provide:
   - Serves as an API allowing players to converse with any NPC within the game, enabling the Game Evaluator to simulate a player's gameplay experience.
   - This interface also provides notifications for any changes in the game state.
 
+### Data Interface
+Detailed API information: https://github.com/RPGGO-AI/oasis/blob/main/src/rpggo/api.md
+
 Required Implementation:
 - Develop an AI-based Game Player that interacts with NPCs according to the game settings and rules for several rounds, resulting in a comprehensive game interaction session.
 - Utilize AI models to automatically evaluate this interaction session, rate the gaming experience, and highlight the game's strengths and areas for improvement.
 
-## Data Interface
-Detailed information: https://github.com/RPGGO-AI/oasis/blob/main/src/rpggo/api.md
 
 ## Open Source Implementation Plan
 We offer an initial implementation plan, which may serve as an example or a baseline.
