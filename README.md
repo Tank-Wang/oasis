@@ -86,7 +86,7 @@ gameplay_session = player.play_game(game_config)
 print(gameplay_session)
 ```
 
-# gameplay session output
+Gameplay session output
 ```json
 "gameplay_session_1": [
     {
@@ -190,7 +190,7 @@ evaluation_result = evaluator.evaluate_game_sessions(game_id, game_sessions)
 print(json.dumps(evaluation_result, ensure_ascii=False, indent=2))
 ```
 
-# evaluation result output
+Evaluation result output
 ```json
 {
     "npc_evaluation": {
