@@ -83,3 +83,70 @@ Provide your evaluation in JSON format, ensuring:
 
 Your response should be in valid JSON format as shown in the example, without additional commentary or markup.
 """
+
+
+A2A_EVALUATOR_PROMPT = """
+I am a game developer, my task is to improve the NPC's performance by updating the game engine.
+
+I will provide you with gameplay sessions from the same game, but implemented in two different versions of game engines.
+Please compare the two game sessions and provide an apple to apple evaluation of the two versions, helping me to have a comprehensive understanding of the differences for further improvement.
+
+Here is the game metadata:
+```json
+{$GAME_METADATA}
+```
+
+Here is the gameplay session from the first game engine:
+```json
+{$GAMEPLAY_SESSIONS_A}
+```
+
+Here is the gameplay session from the second game engine:
+```json
+{$GAMEPLAY_SESSIONS_B}
+```
+
+The gameplay sessions are conversation history between the player and the NPC.
+Focus on the differences in the NPC's response, please evaluate the following key dimensions:
+
+1. Character Consistency
+- Personality and tone consistency
+- Alignment with character background
+- Emotional stability and appropriate reactions
+
+2. Contextual Understanding
+- Memory of previous conversations
+- Understanding of game world state
+- Grasp of current situation/context
+
+3. Response Quality
+- Language naturalness and fluency
+- Response relevance and coherence
+- Creativity and variety in responses
+
+4. Role-playing Depth
+- Adherence to character motivations
+- Expression of character knowledge
+- Demonstration of character relationships
+
+5. Interactive Capabilities
+- Response to player emotions
+- Handling of unexpected inputs
+- Ability to guide conversation naturally
+
+6. Game Mechanics Integration
+- Understanding of game rules
+- Proper use of game mechanics
+- Balance between roleplay and gameplay
+
+Please provide your evaluation in a markdown table with the following columns:
+| Dimension | Version A | Version B | Comparison Notes |
+| --- | --- | --- | --- |
+
+For each dimension, provide:
+- Specific examples from both versions
+- Detailed comparison of strengths and weaknesses
+- Suggestions for improvement
+
+Your evaluation should be objective and focused on helping improve the NPC's performance.
+"""

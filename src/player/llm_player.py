@@ -26,6 +26,7 @@ class GamePlayConfig(BaseModel):
     game_id: str
     max_turns: int = 10 # max chat turns
     gameplay_instructions: str = "" # instructions for the player
+    llm_config: dict = None # LLM configuration
 
 
 class LLMPlayer():
@@ -80,7 +81,7 @@ class LLMPlayer():
             
             # Execute action and get response
             response = run_function_with_retry(
-                func=lambda: rpggo_client.send_action(gameplay_config.game_id, action['character_id'], action['message']),
+                func=lambda: rpggo_client.send_action(gameplay_config.game_id, action['character_id'], action['message'], gameplay_config.llm_config),
                 max_retries=self.MAX_RETRY_COUNT,
                 error_msg="Failed to send action"
             )

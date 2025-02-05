@@ -12,7 +12,7 @@ import json
 from typing import List, Dict
 from ..utils.llm_utils import GPT
 from ..utils.log import get_logger
-from .evaluator_prompt import EVALUATOR_PROMPT
+from .evaluator_prompt import EVALUATOR_PROMPT, A2A_EVALUATOR_PROMPT
 from ..rpggo.rpggo_client import RPGGOClient
 logger = get_logger('LLMEvaluator')
 
@@ -65,6 +65,46 @@ class LLMEvaluator():
 
         return evaluation
     
+    def a2a_evaluation(self, game_id: str, gameplay_sessions_a: List[Dict], gameplay_sessions_b: List[Dict]) -> str:
+        """
+        Compare two game sessions based on their dialogue history
+
+        Args:
+            game_id: Game ID
+            gameplay_sessions_a: Game dialogue history of session A
+            gameplay_sessions_b: Game dialogue history of session B
+            
+        Returns:
+            evaluation: Dictionary containing evaluation results
+        """
+        if not game_id:
+            raise ValueError("game_id is empty")
+
+        if not gameplay_sessions_a:
+            raise ValueError("gameplay_sessions_a is empty")
+
+        if not gameplay_sessions_b:
+            raise ValueError("gameplay_sessions_b is empty")
+        
+        rpggo_client = RPGGOClient()
+        game_metadata = rpggo_client.get_game_metadata(game_id)
+        if not game_metadata:
+            raise ValueError("game_metadata is empty")
+        
+        # construct evaluation prompt
+        prompt = self._construct_a2a_evaluation_prompt(game_metadata, gameplay_sessions_a, gameplay_sessions_b)
+        logger.info(f"evaluator prompt: {prompt}")
+
+        gpt = GPT(model_name="gpt-4o")
+        try:
+            response = gpt.generate(prompt=prompt)
+            logger.debug(f"evaluation: {response}")
+        except Exception as e:
+            logger.error(f"Error in GPT generate: {str(e)}")
+            return ""
+        
+        return response
+
     def _construct_game_evaluation_prompt(self, game_metadata: Dict, gameplay_sessions: List[Dict]) -> str:
         """Construct evaluation prompt"""
         prompt_tpl = EVALUATOR_PROMPT
@@ -72,6 +112,16 @@ class LLMEvaluator():
         logger.debug(f"game_metadata_for_evaluation: {json.dumps(game_metadata_for_evaluation, ensure_ascii=False, indent=2)}")
         prompt = prompt_tpl.replace('{$GAME_METADATA}', json.dumps(game_metadata_for_evaluation, ensure_ascii=False))
         prompt = prompt.replace('{$CHAT_HISTORY}', json.dumps(gameplay_sessions, ensure_ascii=False))
+        return prompt
+    
+    def _construct_a2a_evaluation_prompt(self, game_metadata: Dict, gameplay_sessions_a: List[Dict], gameplay_sessions_b: List[Dict]) -> str:
+        """Construct evaluation prompt"""
+        prompt_tpl = A2A_EVALUATOR_PROMPT
+        game_metadata_for_evaluation = self._get_game_metadata_for_evaluation(game_metadata)
+        # logger.debug(f"game_metadata_for_evaluation: {json.dumps(game_metadata_for_evaluation, ensure_ascii=False, indent=2)}")
+        prompt = prompt_tpl.replace('{$GAME_METADATA}', json.dumps(game_metadata_for_evaluation, ensure_ascii=False))
+        prompt = prompt.replace('{$GAMEPLAY_SESSIONS_A}', json.dumps(gameplay_sessions_a, ensure_ascii=False))
+        prompt = prompt.replace('{$GAMEPLAY_SESSIONS_B}', json.dumps(gameplay_sessions_b, ensure_ascii=False))
         return prompt
 
     def _get_game_metadata_for_evaluation(self, game_metadata: Dict) -> Dict:

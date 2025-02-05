@@ -48,7 +48,7 @@ class RPGGOClient:
         try:
             response = self.session.post(url, json=data)
             response.raise_for_status()
-            logger.info(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            logger.debug(json.dumps(response.json(), indent=2, ensure_ascii=False))
             object = response.json()['data']
             if isinstance(object, list):
                 return object[0]
@@ -80,7 +80,7 @@ class RPGGOClient:
         logger.debug(json.dumps(response.json(), indent=4, ensure_ascii=False))
         return response.json()['data']
         
-    def send_action(self, game_id, character_id, message)->list:
+    def send_action(self, game_id, character_id, message, llm_config=None)->list:
         """
         Send player action and get response
         
@@ -88,7 +88,7 @@ class RPGGOClient:
             game_id: Game ID
             character_id: Character ID
             message: Player's message content
-            
+            llm_config: LLM configuration
         Returns:
             dict: Parsed NPC response
         """
@@ -97,6 +97,13 @@ class RPGGOClient:
             return None
 
         url = f"{self.api_base_url}/v2/open/game/chatsse"
+        if llm_config is None:
+            chat_llm_config = {
+                "chat_model": "gpt-4o",
+                "temperature": 0.8
+            }
+        else:
+            chat_llm_config = llm_config.copy()
 
         data = {
             "game_id": game_id,
@@ -104,10 +111,7 @@ class RPGGOClient:
             "character_id": character_id,
             "message_id": str(uuid.uuid4())[:10],
             "message": message,
-            "llm_config": {
-                "chat_model": "gpt-4o",
-                "temperature": 0.8
-            },
+            "llm_config": chat_llm_config,
             "advance_config": {
                 "enable_async_npc_streaming": True,
                 "enable_image_streaming": False,
@@ -148,6 +152,6 @@ class RPGGOClient:
 if __name__ == "__main__":
     client = RPGGOClient()
     # client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
-    client.get_game_metadata("CHNSAT63X")
+    client.get_game_metadata("GAAISMK3O")
     # client.start_game("CB4JIETSR")
     # print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))

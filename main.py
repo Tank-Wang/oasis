@@ -45,16 +45,56 @@ def play_and_evaluate(gameplay_config: GamePlayConfig, use_saved_data=False):
     evaluation_result = llm_evaluator.evaluate_game_sessions(gameplay_config.game_id, game_sessions)
     print(json.dumps(evaluation_result, ensure_ascii=False, indent=4))
 
+
+def a2a_play_and_evaluation(gameplay_config_a: GamePlayConfig, gameplay_config_b: GamePlayConfig, use_saved_data=False):
+    assert gameplay_config_a.game_id == gameplay_config_b.game_id, "game_id must be the same"
+    if not use_saved_data:
+        gameplay_sessions_a = auto_play_game(gameplay_config_a)
+        gameplay_sessions_b = auto_play_game(gameplay_config_b)
+
+        save_dict = {
+            "game_id": gameplay_config_a.game_id,
+            "gameplay_sessions_a": gameplay_sessions_a,
+            "gameplay_sessions_b": gameplay_sessions_b
+        }
+        with open(f"data/a2a_{gameplay_config_a.game_id}.json", "w") as f:
+            json.dump(save_dict, f, ensure_ascii=False, indent=4)
+    else:
+        with open(f"data/a2a_{gameplay_config_a.game_id}.json", "r") as f:
+            save_dict = json.load(f)
+            gameplay_sessions_a = save_dict["gameplay_sessions_a"]
+            gameplay_sessions_b = save_dict["gameplay_sessions_b"]
+
+    llm_evaluator = LLMEvaluator()
+    evaluation_result = llm_evaluator.a2a_evaluation(gameplay_config_a.game_id, gameplay_sessions_b, gameplay_sessions_a)
+    print(evaluation_result)
+
 def auto_play_game(gameplay_config: GamePlayConfig):
     player = LLMPlayer()
     gameplay_session = player.play_game(gameplay_config)
     print(json.dumps(gameplay_session, ensure_ascii=False, indent=4))
+    return gameplay_session
 
 if __name__ == "__main__":
-    gameplay_config = GamePlayConfig(
+    gameplay_config_a = GamePlayConfig(
         game_id=game_list["tyrion_lannister"],
-        max_turns=3,
-        gameplay_instructions="you are jon snow, the new king of the seven kingdoms. Tell tyrion who you are and try your best to persuade tyrion lannister to be the hand of the king"
+        max_turns=10,
+        gameplay_instructions="you are jon snow, the new king of the seven kingdoms. Tell tyrion who you are and try your best to persuade tyrion lannister to be the hand of the king",
+        llm_config={
+            "chat_model": "fw-llama-3.1-70b",
+            "temperature": 0.8
+        }
     )
-    play_and_evaluate(gameplay_config, use_saved_data=False)
-    # auto_play_game()
+    gameplay_config_b = GamePlayConfig(
+        game_id=game_list["tyrion_lannister"],
+        max_turns=10,
+        gameplay_instructions="you are jon snow, the new king of the seven kingdoms. Tell tyrion who you are and try your best to persuade tyrion lannister to be the hand of the king",
+        llm_config={
+            "chat_model": "fw-deepseek-v3",
+            "temperature": 0.8
+        }
+    )
+    # auto_play_game(gameplay_config_a)
+    # play_and_evaluate(gameplay_config, use_saved_data=False)
+    a2a_play_and_evaluation(gameplay_config_a, gameplay_config_b, use_saved_data=False)
+
