@@ -151,7 +151,7 @@ class RPGGOClient:
 
 if __name__ == "__main__":
     client = RPGGOClient()
-    # client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
+    client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
     client.get_game_metadata("GAAISMK3O")
-    # client.start_game("CB4JIETSR")
-    # print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
+    client.start_game("CB4JIETSR")
+    print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
