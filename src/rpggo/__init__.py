@@ -1,3 +1,7 @@
-from .rpggo_client import RPGGOClient
+"""
+RPGGo package initialization.
+"""
 
-__all__ = ['RPGGOClient'] 
+# from .rpggo_client import RPGGOClient
+
+# __all__ = ['RPGGOClient']

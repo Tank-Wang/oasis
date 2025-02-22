@@ -90,7 +90,7 @@ if __name__ == "__main__":
         max_turns=10,
         gameplay_instructions="you are jon snow, the new king of the seven kingdoms. Tell tyrion who you are and try your best to persuade tyrion lannister to be the hand of the king",
         llm_config={
-            "chat_model": "fw-deepseek-v3",
+            "chat_model": "fw-llama-3.3-70b",
             "temperature": 0.8
         }
     )

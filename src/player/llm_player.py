@@ -11,11 +11,11 @@ from pydantic import BaseModel
 import json
 import random
 
-from ..rpggo import RPGGOClient
-from ..utils.llm_utils import GPT
-from ..utils.log import get_logger
-from .player_prompt import get_system_prompt_tpl_for_ai_player
-from ..utils.common import run_function_with_retry
+from src.rpggo.rpggo_client import RPGGOClient
+from src.utils.llm_utils import GPT
+from src.utils.log import get_logger
+from src.player.player_prompt import get_system_prompt_tpl_for_ai_player
+from src.utils.common import run_function_with_retry
 
 logger = get_logger('LLMPlayer')
 
