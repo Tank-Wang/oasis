@@ -1,9 +1,13 @@
+import sys
+import os
+# 添加项目根目录到Python路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 import requests
 import uuid
 import json
-import os
 from dotenv import load_dotenv
-from ..utils.log import get_logger
+from src.utils.log import get_logger
 
 # Load environment variables
 load_dotenv()
@@ -151,7 +155,14 @@ class RPGGOClient:
 
 if __name__ == "__main__":
     client = RPGGOClient()
+<<<<<<< HEAD
     client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
     client.get_game_metadata("GAAISMK3O")
     client.start_game("CB4JIETSR")
     print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
+=======
+    # client.get_game_metadata("ad096c5c-8420-4f85-b7bd-71104d7668da")
+    print(client.get_game_metadata("GAAISMK3O"))
+    # client.start_game("CB4JIETSR")
+    # print(client.send_action("CB4JIETSR", "CB4JIETSR", "hi"))
+>>>>>>> e7060c047dc3a214cf7f1ac838ffde11c3bb8af9

@@ -10,10 +10,10 @@ TODO:
 
 import json
 from typing import List, Dict
-from ..utils.llm_utils import GPT
-from ..utils.log import get_logger
-from .evaluator_prompt import EVALUATOR_PROMPT, A2A_EVALUATOR_PROMPT
-from ..rpggo.rpggo_client import RPGGOClient
+from src.utils.llm_utils import GPT
+from src.utils.log import get_logger
+from src.evaluator.evaluator_prompt import EVALUATOR_PROMPT, A2A_EVALUATOR_PROMPT
+from src.rpggo.rpggo_client import RPGGOClient
 logger = get_logger('LLMEvaluator')
 
 class LLMEvaluator():
